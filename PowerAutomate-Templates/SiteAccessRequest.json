@@ -1,0 +1,84 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Send_for_approval": {
+        "inputs": {
+          "approvalType": "ApproveReject",
+          "title": "Site Access Request",
+          "assignedTo": "it.admin@contoso.com",
+          "details": "Access request submitted via form. Please approve or reject."
+        },
+        "runAfter": {},
+        "type": "Approval.StartAndWaitForApproval"
+      },
+      "Decision": {
+        "actions": {
+          "If_approved": {
+            "actions": {
+              "Grant_Access": {
+                "inputs": {
+                  "siteUrl": "https://contoso.sharepoint.com/sites/team-site",
+                  "userEmail": "user.request@contoso.com",
+                  "role": "Read"
+                },
+                "runAfter": {},
+                "type": "CustomAction"
+              }
+            },
+            "expression": {
+              "equals": [
+                "@outputs('Send_for_approval')?['body/outcome']",
+                "Approve"
+              ]
+            },
+            "type": "If"
+          },
+          "If_rejected": {
+            "actions": {
+              "Notify_User": {
+                "inputs": {
+                  "to": "user.request@contoso.com",
+                  "subject": "Site Access Denied",
+                  "body": "Your request for site access was not approved."
+                },
+                "runAfter": {},
+                "type": "SendEmail"
+              }
+            },
+            "expression": {
+              "equals": [
+                "@outputs('Send_for_approval')?['body/outcome']",
+                "Reject"
+              ]
+            },
+            "type": "If"
+          }
+        },
+        "runAfter": {
+          "Send_for_approval": [
+            "Succeeded"
+          ]
+        },
+        "type": "Scope"
+      }
+    },
+    "triggers": {
+      "When_a_form_response_is_received": {
+        "inputs": {
+          "host": {
+            "connectionName": "shared_msforms",
+            "operationId": "GetResponseDetails",
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_msforms"
+          },
+          "parameters": {
+            "formId": "SiteAccessForm"
+          }
+        },
+        "metadata": {},
+        "type": "ApiConnection"
+      }
+    },
+    "contentVersion": "1.0.0.0"
+  }
+}
