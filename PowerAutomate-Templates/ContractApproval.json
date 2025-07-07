@@ -1,0 +1,85 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Start_and_wait_for_an_approval": {
+        "inputs": {
+          "approvalType": "ApproveReject",
+          "title": "Contract Approval Request",
+          "assignedTo": "manager@contoso.com",
+          "itemLink": "https://contoso.sharepoint.com/sites/contracts",
+          "itemLinkDescription": "Review Contract Document"
+        },
+        "runAfter": {},
+        "type": "Approval.StartAndWaitForApproval"
+      },
+      "Condition": {
+        "actions": {
+          "If_approved": {
+            "actions": {
+              "Move_file": {
+                "inputs": {
+                  "source": "Contracts",
+                  "destination": "ApprovedContracts"
+                },
+                "runAfter": {},
+                "type": "SharePoint.MoveFile"
+              }
+            },
+            "expression": {
+              "equals": [
+                "@outputs('Start_and_wait_for_an_approval')?['body/outcome']",
+                "Approve"
+              ]
+            },
+            "type": "If"
+          },
+          "If_rejected": {
+            "actions": {
+              "Send_email": {
+                "inputs": {
+                  "to": "creator@contoso.com",
+                  "subject": "Contract Rejected",
+                  "body": "The contract was not approved."
+                },
+                "runAfter": {},
+                "type": "SendEmail"
+              }
+            },
+            "expression": {
+              "equals": [
+                "@outputs('Start_and_wait_for_an_approval')?['body/outcome']",
+                "Reject"
+              ]
+            },
+            "type": "If"
+          }
+        },
+        "runAfter": {
+          "Start_and_wait_for_an_approval": [
+            "Succeeded"
+          ]
+        },
+        "type": "Scope"
+      }
+    },
+    "triggers": {
+      "When_a_file_is_created": {
+        "inputs": {
+          "host": {
+            "connectionName": "shared_sharepointonline",
+            "operationId": "OnNewFile",
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+          },
+          "parameters": {
+            "siteAddress": "https://contoso.sharepoint.com/sites/contracts",
+            "libraryName": "Contracts"
+          }
+        },
+        "metadata": {},
+        "type": "ApiConnectionWebhook"
+      }
+    },
+    "contentVersion": "1.0.0.0"
+  }
+}
