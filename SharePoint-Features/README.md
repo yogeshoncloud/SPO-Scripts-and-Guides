@@ -8,7 +8,7 @@ This repository contains a detailed comparison of **SharePoint features** availa
 ## 📊 SharePoint E3 vs E5 Comparison
 
 You can also download the full Excel file here:  
-📂 [SharePoint_E3_E5_Comparison_UseCases.xlsx](./SharePoint_E3_E5_Comparison_UseCases.xlsx)
+📂 https://github.com/yogeshoncloud/SPO-Scripts-and-Guides/blob/main/SharePoint-Features/Microsoft_365_SharePoint_Comparison.xlsx
 
 ---
 
@@ -51,6 +51,6 @@ You can also download the full Excel file here:
 
 ## 🔗 Connect with Me
 I’ll keep updating this repository with more SharePoint + Microsoft 365 comparisons.  
-- [LinkedIn Profile](https://www.linkedin.com/)  
+- [LinkedIn Profile](https://www.linkedin.com/in/yogesh-sharma-91729612/)  
 - Feedback welcome in the GitHub **Issues** tab!  
 
